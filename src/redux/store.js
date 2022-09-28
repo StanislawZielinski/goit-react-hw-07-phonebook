@@ -1,5 +1,7 @@
-import { configureStore, createReducer } from "@reduxjs/toolkit";
-import { addContact, deleteContact, filterContact } from "../redux/actions";
+import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { apiSlice } from "./apiSlice";
+// import fetchContacts from "./apiSlice";
+// import { addContact, deleteContact, filterContact } from "../redux/actions";
 
 const defaultContacts =
     [
@@ -17,16 +19,35 @@ const INIT_STATE = {
     filter: '',
 } ;
 
-const contacts = createReducer(INIT_STATE, {
-    [addContact]: (state, action) => { state.items = [...state.items,action.payload] },
-    [deleteContact]: (state, action) => { state.items = [...action.payload] },
-    [filterContact]: (state, action) => {state.filter = action.payload},
-}); 
+// const contacts = createReducer(INIT_STATE, {
+//     [addContact]: (state, action) => { state.items = [...state.items,action.payload] },
+//     [deleteContact]: (state, action) => { state.items = [...action.payload] },
+//     [filterContact]: (state, action) => {state.filter = action.payload},
+// }); 
 
+const contactsSlice = createSlice({
+  name: 'contacts',
+  initialState: INIT_STATE,
+  reducers: {
+    addContact(state, action) {
+      state.items = [...state.items,action.payload]
+    },
+    deleteContact(state, action) {
+      state.items = [...action.payload]
+    },
+    filterContact(state, action) {
+      state.filter = action.payload
+    },
+    }
+})
 const store = configureStore({
     reducer: {
-        contacts
+        contacts: contactsSlice.reducer,
+        [apiSlice.reducerPath]: apiSlice.reducer
     },
+    middleware: getDefaultMiddleware =>
+    getDefaultMiddleware().concat(apiSlice.middleware)
 });
 
+export const { addContact, deleteContact, filterContact } = contactsSlice.actions
 export default store;

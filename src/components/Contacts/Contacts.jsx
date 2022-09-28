@@ -1,15 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
-
-const Contacts = ({ renderContacts, filter, contacts }) => {
-        
-        return (
-                <ul className="contactsList-wrapper">{renderContacts(filter, contacts)}</ul>
-    )}
-export default Contacts
+// pamietaj filter
+const Contacts = ({ renderContacts, contacts }) => {   
+    return (
+        <ul className="contactsList-wrapper">{renderContacts(contacts)}</ul>
+    )
+}
 
 Contacts.propTypes = {
     renderContacts: PropTypes.func.isRequired,
-    filter: PropTypes.string,
+    // filter: PropTypes.string,
     contacts: PropTypes.array,
 }
+
+export default Contacts

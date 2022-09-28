@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const Form = ({handleSubmit}) => {
-    
+
     return (
             <form className="form" onSubmit={handleSubmit}>
             <p className="title">Phonebook</p>
