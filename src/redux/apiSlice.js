@@ -20,12 +20,21 @@ export const apiSlice = createApi(
                         body: initialPost
                     }),
                     invalidatesTags: ['contacts']
+                }),
+                deletePost: builder.mutation({
+                    query(id) {
+                        return {
+                            url: `/contacts/${id}`,
+                            method: 'DELETE',
+                        }
+                    },
+                    invalidatesTags: ['contacts']
                 })
             }
         )
     }
 )
-export const { useGetPostsQuery, useAddNewPostMutation } = apiSlice;
+export const { useGetPostsQuery, useAddNewPostMutation, useDeletePostMutation } = apiSlice;
 
 
 
