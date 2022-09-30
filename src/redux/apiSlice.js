@@ -9,6 +9,7 @@ export const apiSlice = createApi(
             {
                 getPosts: builder.query({
                     query: () => '/contacts',
+                    transformResponse: res => res.sort((a,b)=>b.id - a.id),
                     providesTags: ['contacts']
                 }),
 

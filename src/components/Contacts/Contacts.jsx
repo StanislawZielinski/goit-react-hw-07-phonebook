@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-// pamietaj filter
+import './Contacts.css';
+
 const Contacts = ({ renderContacts, contacts, filter }) => {   
     return (
         <ul className="contactsList-wrapper">{renderContacts(contacts, filter)}</ul>

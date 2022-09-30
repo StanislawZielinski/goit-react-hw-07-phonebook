@@ -9,8 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {  filterContact } from "../../redux/store";
 import { useGetPostsQuery, useAddNewPostMutation, useDeletePostMutation } from "redux/apiSlice";
 import { Audio } from 'react-loader-spinner';
-
-
+import Notiflix from 'notiflix';
 
 const Phonebook = () => {
     const { data, isLoading, isSuccess, isError, error } = useGetPostsQuery();
@@ -28,36 +27,38 @@ const Phonebook = () => {
         const canSave = [name, phoneNumber, id].every(Boolean) && !isLoading;
         for (const contact of data) {
             if (contact.name.includes(name)) {
-                alert(`${name} is already in contacts`)
+                Notiflix.Notify.failure(`${name} is already in contacts`)
                 return
             }  
         };
 
         if (canSave) {
             try {
+                Notiflix.Loading.standard('wait...');
+                Notiflix.Loading.remove(5000);
                 await addNewContact ({ name, phone: phoneNumber, id }).unwrap();
             }
             catch (error) {
                 alert("Failed to add contact")
             }
         }
-        // form.reset();
     }
 
     const deleteItem = async (id) => {
+        Notiflix.Loading.standard('wait...');
+        Notiflix.Loading.remove(5000);
         await deleteContact(id);
     };
 
     const renderContacts = (contacts, filter) => {
-        console.log(filter)
         if (!filter) {
             if (isLoading) {
                 return <Audio/>
             }
             else if (isSuccess) {
                 return contacts.map(contact => {
-                    return <li className="contacts" key={contact.id}>{contact.name}: {contact.phone}
-                        <DeleteBtn deleteContact={deleteItem} id={contact.id} />
+                    return <li className="contact-list-item" key={contact.id}><div className="contacts" >{contact.name}: {contact.phone}
+                    <DeleteBtn deleteContact={deleteItem} id={contact.id} /></div>
                     </li>
                 })
             }
@@ -71,67 +72,25 @@ const Phonebook = () => {
         return (
         filterFunction.map(contact =>
         {
-            return <li className="contacts" key={contact.id}>{contact.name}: {contact.phone}
-                <DeleteBtn deleteContact={deleteItem} id={contact.id} />
+            return <li className="contact-list-item" key={contact.id}><div className="contacts" >{contact.name}: {contact.phone}
+            <DeleteBtn deleteContact={deleteItem} id={contact.id} /></div>
             </li>
         })
     )
-
-
     }
-
-    //     let content;
-    // if (isLoading) {
-    //     content =<Audio/>
-    // }
-    // else if (isSuccess) {
-    //     content = <Contacts renderContacts={renderContacts}
-    //     contacts={data} />
-    // }
-    // else if (isError){
-    //     content = <div>{error.toString()}</div>
-    // }
-    
-        // const renderContacts = (filter, contacts) => {
-        // if (!filter) {
-        //     return contacts.map(contact => {
-        //         return <li className="contacts" key={contact.id}>{contact.name}: {contact.number}
-        //             <DeleteBtn deleteContact={deleteItem} id={contact.id} />
-        //         </li>
-        //     })
-        // }
-
-        //     const filterFunction = contacts.filter((el) => el.name.toLowerCase().includes(filter.toLowerCase()));
-    
-        //         return (
-        //         filterFunction.map(contact =>
-        //         {
-        //             return <li className="contacts" key={contact.id}>{contact.name}: {contact.number}
-        //                 <DeleteBtn deleteContact={deleteItem} id={contact.id} />
-        //             </li>
-        //         })
-        //     )
-        // }
 
 
     const onChange = (evt) => {
-        // console.log(evt.target.value);
         dispatch(filterContact(evt.target.value));
     };   
-    
-    // useEffect(() => {
-    //     localStorage.setItem("newState", JSON.stringify(contactArray));
-    // }, [contactArray]);
 
-
-            return (
+ return (
             <div className="wrapper">
                 <Form handleSubmit={handleSubmit} />
                     <div className="contacts-wrapper">
                     <Filter onChange={onChange} />
                     <Contacts renderContacts={renderContacts}
                     contacts={data} filter={filterStore}/>
-                    {/* {content} */}
                 </div>
             </div>
     )

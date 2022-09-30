@@ -1,0 +1,14 @@
+.button-contact {
+    background-color: lightcoral;
+    font-size: 12px;
+    margin-bottom: 5px;
+    transition: all 0.5s;
+    text-align: right;
+    display: inline-block;
+}
+
+.button-contact:hover {
+    cursor: pointer;
+    background-color: black;
+    color: white;
+}
