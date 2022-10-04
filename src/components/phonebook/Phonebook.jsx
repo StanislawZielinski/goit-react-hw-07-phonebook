@@ -10,13 +10,14 @@ import {  filterContact } from "../../redux/store";
 import { useGetPostsQuery, useAddNewPostMutation, useDeletePostMutation } from "redux/apiSlice";
 import { Audio } from 'react-loader-spinner';
 import Notiflix from 'notiflix';
+import { filterStore } from "redux/selectors";
 
 const Phonebook = () => {
     const { data, isLoading, isSuccess, isError, error } = useGetPostsQuery();
     const [addNewContact] = useAddNewPostMutation();
     const [deleteContact] = useDeletePostMutation();
     const dispatch = useDispatch();
-    const filterStore = useSelector(state => state.contacts.filter);
+    const filter = useSelector(filterStore);
 
     const handleSubmit = async (evt) => {
         evt.preventDefault();
@@ -24,19 +25,17 @@ const Phonebook = () => {
         const name = form.elements.name.value;
         const phoneNumber = form.elements.number.value;
         const id = nanoid();
-        const canSave = [name, phoneNumber, id].every(Boolean) && !isLoading;
-        for (const contact of data) {
-            if (contact.name.includes(name)) {
-                Notiflix.Notify.failure(`${name} is already in contacts`)
-                return
-            }  
-        };
 
+        const checkingNameFn = (contact) => contact.name === name;
+        const isNameNotOk = data.some(checkingNameFn);
+        isNameNotOk && Notiflix.Notify.failure(`${name} is already in contacts`);
+
+        const canSave = [name, phoneNumber, id, !isNameNotOk].every(Boolean) && !isLoading;
         if (canSave) {
             try {
                 Notiflix.Loading.standard('wait...');
                 Notiflix.Loading.remove(5000);
-                await addNewContact ({ name, phone: phoneNumber, id }).unwrap();
+                await addNewContact({ name, phone: phoneNumber, id }).unwrap();
             }
             catch (error) {
                 alert("Failed to add contact")
@@ -70,7 +69,7 @@ const Phonebook = () => {
         const filterFunction = contacts.filter((el) => el.name.toLowerCase().includes(filter.toLowerCase()));
     
         return (
-        filterFunction.map(contact =>
+            filterFunction.map(contact =>
         {
             return <li className="contact-list-item" key={contact.id}><div className="contacts" >{contact.name}: {contact.phone}
             <DeleteBtn deleteContact={deleteItem} id={contact.id} /></div>
@@ -78,7 +77,6 @@ const Phonebook = () => {
         })
     )
     }
-
 
     const onChange = (evt) => {
         dispatch(filterContact(evt.target.value));
@@ -90,7 +88,7 @@ const Phonebook = () => {
                     <div className="contacts-wrapper">
                     <Filter onChange={onChange} />
                     <Contacts renderContacts={renderContacts}
-                    contacts={data} filter={filterStore}/>
+                    contacts={data} filter={filter}/>
                 </div>
             </div>
     )
